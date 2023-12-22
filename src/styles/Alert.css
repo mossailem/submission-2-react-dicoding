@@ -6,3 +6,11 @@
   color: var(--light);
   border-radius: 8px;
 }
+
+.alert-hide {
+  display: none;
+}
+
+.alert-show {
+  display: block;
+}
