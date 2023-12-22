@@ -21,6 +21,10 @@ function App() {
     setSession(data);
     navigate("/");
   };
+  const onLogoutHandler = () => {
+    setSession(null);
+    navigate("/");
+  };
 
   useEffect(() => {
     getUserLogged().then(({ data }) => {
