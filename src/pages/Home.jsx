@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, useContext } from "react";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
 import Toolbar from "../components/Toolbar";
@@ -7,11 +7,19 @@ import { PropTypes } from "prop-types";
 import ContentCardsContainer from "../components/ContentCardsContainer";
 import ToolbarActionLink from "../components/ToolbarActionLink";
 import { useSearchParams } from "react-router-dom";
+import LocaleContext from "../context/LocaleContext";
 
 function HomePageWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { locale } = useContext(LocaleContext);
 
-  return <Home searchParams={searchParams} setSearchParams={setSearchParams} />;
+  return (
+    <Home
+      searchParams={searchParams}
+      setSearchParams={setSearchParams}
+      locale={locale}
+    />
+  );
 }
 
 class Home extends Component {
@@ -70,12 +78,12 @@ class Home extends Component {
       <>
         <Toolbar isHome={true} title="Muslim Note App">
           <ToolbarActionLink
-            title="Archives"
+            title={this.props.locale === "en" ? "Archives" : "Arsip"}
             icon="fa-archive"
             url="/archives"
           />
           <ToolbarActionLink
-            title="Create New"
+            title={this.props.locale === "en" ? "Create New" : "Buat Baru"}
             icon="fa-plus"
             url="/create"
             additionalClass="bg-primary"
@@ -99,6 +107,7 @@ class Home extends Component {
 Home.propTypes = {
   searchParams: PropTypes.object.isRequired,
   setSearchParams: PropTypes.func.isRequired,
+  locale: PropTypes.string.isRequired,
 };
 
 export default HomePageWrapper;

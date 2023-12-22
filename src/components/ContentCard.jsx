@@ -2,6 +2,8 @@ import { PropTypes } from "prop-types";
 import "../styles/ContentCard.css";
 import ContentCardContent from "./ContentCardContent";
 import ContentCardActionButton from "./ContentCardActionButton";
+import { useContext } from "react";
+import LocaleContext from "../context/LocaleContext";
 
 function ContentCard({
   id,
@@ -12,7 +14,8 @@ function ContentCard({
   mainHandler,
   onDeleteHandler,
 }) {
-  const actionTitle = archived ? "Unarchive" : "Archive";
+  const { locale } = useContext(LocaleContext);
+  const actionTitle = getArchiveActionTitle(archived, locale);
   const actionIcon = archived ? "fa-reply" : "fa-box-archive";
 
   return (
@@ -22,6 +25,7 @@ function ContentCard({
         title={title}
         timestamp={timestamp}
         description={description}
+        locale={locale}
       />
 
       <div className="card-action">
@@ -32,7 +36,7 @@ function ContentCard({
           id={id}
         />
         <ContentCardActionButton
-          title="Delete"
+          title={locale === "en" ? "Delete" : "Hapus"}
           icon="fa-trash"
           handler={onDeleteHandler}
           id={id}
@@ -41,6 +45,13 @@ function ContentCard({
       </div>
     </article>
   );
+}
+
+function getArchiveActionTitle(isArchived, locale) {
+  if (isArchived && locale === "en") return "Unarchive";
+  if (isArchived && locale === "id") return "Keluarkan dari Arsip";
+  if (!isArchived && locale === "en") return "Archive";
+  return "Arsipkan";
 }
 
 ContentCard.propTypes = {

@@ -7,10 +7,11 @@ const dateFormat = {
   minute: "2-digit"
 };
 
-function formatIndonesianTimestamp(timestamp) {
+function formatIndonesianTimestamp(timestamp, locale) {
   const date = new Date(timestamp);
-  
-  return `${date.toLocaleString("id-ID", dateFormat)} WIB`;
+  const localeString = locale === "en" ? "en-US" : "id-ID";
+
+  return `${date.toLocaleString(localeString, dateFormat)} WIB`;
 }
 
 export default formatIndonesianTimestamp;

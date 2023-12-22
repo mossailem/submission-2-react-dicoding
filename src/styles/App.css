@@ -10,8 +10,26 @@
   --theme-d1: #3539b5;
   --theme-d2: #2f33a1;
   --theme-d3: #292c8d;
-  --theme-d3: #232679;
-  --theme-d4: #1d2065;
+  --theme-d4: #232679;
+  --theme-d5: #1d2065;
+  --danger: #ff3f34;
+  --danger-light: #ff5e57;
+  --dark: #485460;
+  --light: #d2dae2;
+}
+
+[data-theme='dark'] {
+  --theme-d5: #f3f4fc;
+  --theme-d4: #d8d9f4;
+  --theme-d3: #b2b3e9;
+  --theme-d2: #8b8edd;
+  --theme-d1: #6468d2;
+  --theme: #3c40c6;
+  --theme-l1: #3539b5;
+  --theme-l2: #2f33a1;
+  --theme-l3: #292c8d;
+  --theme-l4: #232679;
+  --theme-l5: #1d2065;
   --danger: #ff3f34;
   --danger-light: #ff5e57;
   --dark: #485460;

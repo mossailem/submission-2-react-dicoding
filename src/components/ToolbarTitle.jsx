@@ -1,8 +1,28 @@
 import "../styles/ToolbarTitle.css";
 import { PropTypes } from "prop-types";
 import BackButton from "./BackButton";
+import { useContext } from "react";
+import SessionContext from "../context/SessionContext";
+import { redirect } from "react-router-dom";
+import ColorModeContext from "../context/ColorModeContext";
+import LocaleContext from "../context/LocaleContext";
 
-function ToolbarTitle({ isHome, title, logoutHandler }) {
+function ToolbarTitle({ isHome, title }) {
+  const { session, setSession } = useContext(SessionContext);
+  const { colorMode, toggleColorMode } = useContext(ColorModeContext);
+  const { locale, toggleLocale } = useContext(LocaleContext);
+
+  const logoutHandler = () => {
+    setSession(null);
+    redirect("/");
+  };
+
+  const greet = locale === "en" ? "Hey" : "Hai";
+  const changeLanguage = locale === "en" ? "Change Language" : "Ubah bahasa";
+  const changeTo = locale === "en" ? "Change to" : "Ubah menjadi";
+  const darkMode = locale === "en" ? "Dark Mode" : "Mode Gelap";
+  const lightMode = locale === "en" ? "Light Mode" : "Mode Terang";
+
   return (
     <div className="toolbar__title">
       {!isHome && <BackButton />}
@@ -11,9 +31,21 @@ function ToolbarTitle({ isHome, title, logoutHandler }) {
       {isHome && (
         <small>
           <br />
-          Logged in as <strong>Muslim Aswaja</strong> -{" "}
+          {greet}, <strong>{session.name}</strong> -{" "}
           <a href="#" title="Logout" onClick={logoutHandler}>
             Logout
+          </a>
+          <a href="#" title={changeLanguage} onClick={toggleLocale}>
+            {locale === "en" ? "ID" : "EN"}
+          </a>
+          <a
+            href="#"
+            title={`${changeTo} ${
+              colorMode === "light" ? darkMode : lightMode
+            }`}
+            onClick={toggleColorMode}
+          >
+            {colorMode === "light" ? darkMode : lightMode}
           </a>
         </small>
       )}
@@ -24,7 +56,6 @@ function ToolbarTitle({ isHome, title, logoutHandler }) {
 ToolbarTitle.propTypes = {
   isHome: PropTypes.bool.isRequired,
   title: PropTypes.string.isRequired,
-  logoutHandler: PropTypes.func.isRequired,
 };
 
 export default ToolbarTitle;
