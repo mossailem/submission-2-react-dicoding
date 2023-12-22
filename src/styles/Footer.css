@@ -1,0 +1,14 @@
+/** Footer */
+.footer {
+  text-align: center;
+  color: var(--theme-l2);
+
+  & a {
+    color: var(--theme-l2);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--theme-l1);
+    }
+  }
+}

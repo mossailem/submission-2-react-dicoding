@@ -1,0 +1,29 @@
+/** 404 */
+.page-not-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 85vh;
+
+  & > i {
+    color: var(--theme-l3);
+  }
+
+  & > p {
+    color: var(--theme-d4);
+  }
+
+  & > a {
+    background-color: var(--theme);
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: var(--theme-l4);
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      background-color: var(--theme-l1);
+    }
+  }
+}

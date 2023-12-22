@@ -1,0 +1,12 @@
+.toolbar {
+  padding: 8px 16px;
+  width: 100%;
+}
+
+@media only screen and (min-width: 640px) {
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

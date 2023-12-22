@@ -1,0 +1,24 @@
+.content {
+  width: 100%;
+  padding: 16px;
+  min-height: 80vh;
+}
+
+.content__title {
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+  font-size: 18pt;
+  margin: 0;
+  margin-bottom: 8px;
+  color: var(--theme-d4);
+}
+
+.content__timestamp {
+  color: var(--theme-l2);
+}
+
+.content__description {
+  color: var(--dark);
+  line-height: 1.5rem;
+}

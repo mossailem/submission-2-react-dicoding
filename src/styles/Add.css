@@ -1,0 +1,11 @@
+[contenteditable] {
+  outline: none;
+}
+
+/* References: https://codepen.io/flesler/pen/kdJmbw */
+[contenteditable]:empty:before {
+  content: attr(placeholder);
+  pointer-events: none;
+  color: var(--theme-l2);
+  display: block; /* For Firefox */
+}

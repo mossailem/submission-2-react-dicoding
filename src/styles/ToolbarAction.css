@@ -1,0 +1,50 @@
+.toolbar__action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  border-radius: 1rem;
+
+  & > button,
+  & > a {
+    flex-grow: 1;
+  }
+}
+
+.toolbar__action > button,
+.toolbar__action > a {
+  border: 0;
+  padding: 8px 16px;
+  background-color: var(--theme-l3);
+  color: var(--theme-d4);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  font-size: 10pt;
+
+  &:hover {
+    background-color: var(--theme-l5);
+  }
+
+  &:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+
+@media only screen and (min-width: 640px) {
+  .toolbar__action {
+    flex-grow: 0;
+    width: 100%;
+
+    & > button,
+    & > a {
+      flex-grow: 0;
+    }
+  }
+}
