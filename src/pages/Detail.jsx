@@ -1,24 +1,28 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Toolbar from "../components/Toolbar";
+import Loading from "../components/Loading";
 import ToolbarActionButton from "../components/ToolbarActionButton";
 import "../styles/Detail.css";
 import "../styles/Empty.css";
-import { Component } from "react";
+import { Component, useContext } from "react";
+import { PropTypes } from "prop-types";
+import DetailNotFound from "../components/DetailNotFound";
+import DetailContent from "../components/DetailContent";
+import LocaleContext from "../context/LocaleContext";
+import getArchiveActionTitle from "../utils/getArchiveActionTitle";
 import {
   archiveNote,
   deleteNote,
   getNote,
   unarchiveNote,
-} from "../utils/local-data";
-import { PropTypes } from "prop-types";
-import DetailNotFound from "../components/DetailNotFound";
-import DetailContent from "../components/DetailContent";
+} from "../utils/network-data";
 
 function DetailPageWrapper() {
   const { id } = useParams();
+  const { locale } = useContext(LocaleContext);
   const navigate = useNavigate();
-  return <Detail id={id} navigator={navigate} />;
+  return <Detail id={id} navigator={navigate} locale={locale} />;
 }
 
 class Detail extends Component {
@@ -26,7 +30,7 @@ class Detail extends Component {
     super(props);
 
     this.state = {
-      note: getNote(props.id),
+      note: null,
     };
 
     this.onArchiveHandler = this.onArchiveHandler.bind(this);
@@ -34,28 +38,41 @@ class Detail extends Component {
     this.onDeleteHandler = this.onDeleteHandler.bind(this);
   }
 
+  async componentDidMount() {
+    const note = await getNote(this.props.id);
+
+    this.setState(() => {
+      return { note: note.data };
+    });
+  }
+
   navigate = this.props.navigator;
 
-  onArchiveHandler(id) {
-    archiveNote(id);
+  async onArchiveHandler(id) {
+    await archiveNote(id);
 
     this.navigate(this.state.note.archived ? "/archives" : "/");
   }
 
-  onUnarchiveHandler(id) {
-    unarchiveNote(id);
+  async onUnarchiveHandler(id) {
+    await unarchiveNote(id);
 
     this.navigate(this.state.note.archived ? "/archives" : "/");
   }
 
-  onDeleteHandler(id) {
-    deleteNote(id);
+  async onDeleteHandler(id) {
+    await deleteNote(id);
 
     this.navigate(this.state.note.archived ? "/archives" : "/");
   }
 
   render() {
-    const actionTitle = this.state.note.archived ? "Unarchive" : "Archive";
+    if (!this.state.note) return <Loading />;
+
+    const actionTitle = getArchiveActionTitle(
+      this.state.note.archived,
+      this.props.locale
+    );
     const actionIcon = this.state.note.archived ? "fa-reply" : "fa-box-archive";
     const mainHandler = this.state.note.archived
       ? this.onUnarchiveHandler
@@ -75,7 +92,7 @@ class Detail extends Component {
               <ToolbarActionButton
                 id={this.state.note.id}
                 handler={this.onDeleteHandler}
-                title="Delete"
+                title={this.props.locale === "en" ? "Delete" : "Hapus"}
                 icon="fa-trash"
                 additionalClass="bg-danger"
               />
@@ -102,6 +119,7 @@ class Detail extends Component {
 Detail.propTypes = {
   id: PropTypes.string.isRequired,
   navigator: PropTypes.func.isRequired,
+  locale: PropTypes.string.isRequired,
 };
 
 export default DetailPageWrapper;

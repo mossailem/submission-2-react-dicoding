@@ -6,9 +6,11 @@ import FormInput from "../components/FormInput";
 import useInput from "../utils/use-input";
 import { PropTypes } from "prop-types";
 import { login } from "../utils/network-data";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import LocaleContext from "../context/LocaleContext";
 
 function Login({ successHandler }) {
+  const { locale } = useContext(LocaleContext);
   const [email, onEmailChangeHandler] = useInput("");
   const [password, onPasswordChangeHandler] = useInput("");
   const [isAlertDisplayed, setIsAlertDisplayed] = useState(false);
@@ -18,8 +20,14 @@ function Login({ successHandler }) {
 
     hideAlert();
 
-    if (!email) return showAlert("Fill the email!");
-    if (!password) return showAlert("Fill the password!");
+    if (!email)
+      return showAlert(
+        locale === "en" ? "Fill the email!" : "Email harus diisi!"
+      );
+    if (!password)
+      return showAlert(
+        locale === "en" ? "Fill the password!" : "Password harus diisi!"
+      );
 
     const { error, data } = await login({
       email: email,
@@ -27,7 +35,7 @@ function Login({ successHandler }) {
     });
 
     if (error) {
-      return showAlert("Login failed!");
+      return showAlert(locale === "en" ? "Login failed!" : "Login gagal!");
     }
 
     successHandler(data);
@@ -42,6 +50,11 @@ function Login({ successHandler }) {
     setIsAlertDisplayed(false);
   };
 
+  const footerText =
+    locale === "en"
+      ? "Don't have an account? Register"
+      : "Belum memiliki akun? Daftar";
+
   return (
     <>
       <FormContainer>
@@ -54,7 +67,9 @@ function Login({ successHandler }) {
             id="email"
             type="email"
             label="Email"
-            placeholder="Enter your email..."
+            placeholder={
+              locale === "en" ? "Enter your email..." : "Masukkan email Anda..."
+            }
             value={email}
             onChange={onEmailChangeHandler}
           />
@@ -63,7 +78,11 @@ function Login({ successHandler }) {
             id="password"
             type="password"
             label="Password"
-            placeholder="Enter your password..."
+            placeholder={
+              locale === "en"
+                ? "Enter your password..."
+                : "Masukkan password Anda..."
+            }
             value={password}
             onChange={onPasswordChangeHandler}
           />
@@ -72,7 +91,8 @@ function Login({ successHandler }) {
         </form>
 
         <p>
-          Don&apos;t have an account? Register <Link to="/register">here</Link>!
+          {footerText}{" "}
+          <Link to="/register">{locale === "en" ? "here" : "di sini"}</Link>!
         </p>
       </FormContainer>
 

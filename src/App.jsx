@@ -8,14 +8,21 @@ import Detail from "./pages/Detail";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { useEffect, useMemo, useState } from "react";
-import { getUserLogged, putAccessToken } from "./utils/network-data";
+import {
+  getAccessToken,
+  getUserLogged,
+  putAccessToken,
+} from "./utils/network-data";
 import SessionContext from "./context/SessionContext";
 import ColorModeContext from "./context/ColorModeContext";
 import LocaleContext from "./context/LocaleContext";
+import Loading from "./components/Loading";
 
 function App() {
-  const [locale, setLocale] = useState("en");
-  const [colorMode, setColorMode] = useState("light");
+  const [locale, setLocale] = useState(localStorage.getItem("locale") || "en");
+  const [colorMode, setColorMode] = useState(
+    localStorage.getItem("color-mode") || "light"
+  );
   const [session, setSession] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const navigate = useNavigate();
@@ -31,7 +38,9 @@ function App() {
   }, [session]);
   const toggleColorMode = () => {
     setColorMode((prevColorMode) => {
-      return prevColorMode === "light" ? "dark" : "light";
+      const newColorMode = prevColorMode === "light" ? "dark" : "light";
+      localStorage.setItem("color-mode", newColorMode);
+      return newColorMode;
     });
   };
   const colorModeContextValue = useMemo(() => {
@@ -39,7 +48,9 @@ function App() {
   }, [colorMode]);
   const toggleLocale = () => {
     setLocale((prevLocale) => {
-      return prevLocale === "en" ? "id" : "en";
+      const newLocale = prevLocale === "en" ? "id" : "en";
+      localStorage.setItem("locale", newLocale);
+      return newLocale;
     });
   };
   const localeContextValue = useMemo(() => {
@@ -47,28 +58,44 @@ function App() {
   }, [locale]);
 
   useEffect(() => {
+    if (!getAccessToken()) return setIsInitializing(false);
+    
     getUserLogged().then(({ data }) => {
       setSession(data);
+      setIsInitializing(false);
     });
-    setIsInitializing(false);
   }, []);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", colorMode);
   }, [colorMode]);
 
   if (isInitializing) {
-    return null;
+    return (
+      <SessionContext.Provider value={sessionContextValue}>
+        <ColorModeContext.Provider value={colorModeContextValue}>
+          <LocaleContext.Provider value={localeContextValue}>
+            <Loading />
+          </LocaleContext.Provider>
+        </ColorModeContext.Provider>
+      </SessionContext.Provider>
+    );
   }
 
   if (!session) {
     return (
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="*"
-          element={<Login successHandler={onLoginSuccessHandler} />}
-        />
-      </Routes>
+      <SessionContext.Provider value={sessionContextValue}>
+        <ColorModeContext.Provider value={colorModeContextValue}>
+          <LocaleContext.Provider value={localeContextValue}>
+            <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="*"
+                element={<Login successHandler={onLoginSuccessHandler} />}
+              />
+            </Routes>
+          </LocaleContext.Provider>
+        </ColorModeContext.Provider>
+      </SessionContext.Provider>
     );
   }
 

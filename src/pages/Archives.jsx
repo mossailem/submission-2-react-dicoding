@@ -1,21 +1,27 @@
-import { Component } from "react";
+import { Component, useContext } from "react";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
 import Toolbar from "../components/Toolbar";
+import ContentCardsContainer from "../components/ContentCardsContainer";
+import { useSearchParams } from "react-router-dom";
+import { PropTypes } from "prop-types";
+import LocaleContext from "../context/LocaleContext";
 import {
   deleteNote,
   getArchivedNotes,
   unarchiveNote,
-} from "../utils/local-data";
-import ContentCardsContainer from "../components/ContentCardsContainer";
-import { useSearchParams } from "react-router-dom";
-import { PropTypes } from "prop-types";
+} from "../utils/network-data";
 
 function ArchivesPageWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { locale } = useContext(LocaleContext);
 
   return (
-    <Archives searchParams={searchParams} setSearchParams={setSearchParams} />
+    <Archives
+      searchParams={searchParams}
+      setSearchParams={setSearchParams}
+      locale={locale}
+    />
   );
 }
 
@@ -23,10 +29,8 @@ class Archives extends Component {
   constructor(props) {
     super(props);
 
-    const q = this.props.searchParams.get("q");
-
     this.state = {
-      notes: q ? this.search(getArchivedNotes(), q) : getArchivedNotes(),
+      notes: [],
     };
 
     this.onUnarchiveNote = this.onUnarchiveNote.bind(this);
@@ -37,32 +41,46 @@ class Archives extends Component {
       this.onSearchHandler({ value: this.props.searchParams.get("q") });
   }
 
-  onSearchHandler({ value }) {
+  async componentDidMount() {
+    const notes = await getArchivedNotes();
+    const q = this.props.searchParams.get("q");
+
+    if (q) notes.data = this.search(notes.data, q);
+
+    this.setState(() => {
+      return { notes: notes.data };
+    });
+  }
+
+  async onSearchHandler({ value }) {
     this.props.setSearchParams({ q: value ? value.toLowerCase() : "" });
+    const notes = await getArchivedNotes();
 
     this.setState(() => {
       return {
-        notes: this.search(getArchivedNotes(), value),
+        notes: this.search(notes.data, value),
       };
     });
   }
 
-  onUnarchiveNote(id) {
-    this.setState(() => {
-      unarchiveNote(id);
+  async onUnarchiveNote(id) {
+    await unarchiveNote(id);
+    const notes = await getArchivedNotes();
 
+    this.setState(() => {
       return {
-        notes: getArchivedNotes(),
+        notes: notes.data,
       };
     });
   }
 
-  onDeleteHandler(id) {
-    this.setState(() => {
-      deleteNote(id);
+  async onDeleteHandler(id) {
+    await deleteNote(id);
+    const notes = await getArchivedNotes();
 
+    this.setState(() => {
       return {
-        notes: getArchivedNotes(),
+        notes: notes.data,
       };
     });
   }
@@ -76,10 +94,14 @@ class Archives extends Component {
   render() {
     return (
       <>
-        <Toolbar isHome={false} title="Archives" />
+        <Toolbar
+          isHome={false}
+          title={this.props.locale === "en" ? "Archives" : "Arsip"}
+        />
         <SearchBar
           searchHandler={this.onSearchHandler}
           searchQuery={this.props.searchParams.get("q")}
+          locale={this.props.locale}
         />
         <ContentCardsContainer
           notes={this.state.notes}
@@ -95,6 +117,7 @@ class Archives extends Component {
 Archives.propTypes = {
   searchParams: PropTypes.object.isRequired,
   setSearchParams: PropTypes.func.isRequired,
+  locale: PropTypes.string.isRequired,
 };
 
 export default ArchivesPageWrapper;

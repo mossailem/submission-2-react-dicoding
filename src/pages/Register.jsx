@@ -5,10 +5,12 @@ import useInput from "../utils/use-input";
 import FormContainer from "../components/FormContainer";
 import "../styles/FormContainer.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { register } from "../utils/network-data";
+import LocaleContext from "../context/LocaleContext";
 
 function Register() {
+  const { locale } = useContext(LocaleContext);
   const [name, onNameChangeHandler] = useInput("");
   const [email, onEmailChangeHandler] = useInput("");
   const [password, onPasswordChangeHandler] = useInput("");
@@ -51,10 +53,13 @@ function Register() {
     setIsAlertDisplayed(false);
   };
 
+  const footerText =
+    locale === "en" ? "Have an account? Login" : "Sudah memiliki akun? Login";
+
   return (
     <>
       <FormContainer>
-        <h1>Register</h1>
+        <h1>{locale === "en" ? "Register" : "Daftar"}</h1>
 
         <Alert message={alertMessage} isDisplayed={isAlertDisplayed} />
 
@@ -62,8 +67,10 @@ function Register() {
           <FormInput
             id="name"
             type="name"
-            label="Name"
-            placeholder="Enter your name..."
+            label={locale === "en" ? "Name" : "Nama"}
+            placeholder={
+              locale === "en" ? "Enter your name..." : "Masukkan nama Anda..."
+            }
             value={name}
             onChange={onNameChangeHandler}
           />
@@ -72,7 +79,9 @@ function Register() {
             id="email"
             type="email"
             label="Email"
-            placeholder="Enter your email..."
+            placeholder={
+              locale === "en" ? "Enter your email..." : "Masukkan email Anda..."
+            }
             value={email}
             onChange={onEmailChangeHandler}
           />
@@ -81,7 +90,11 @@ function Register() {
             id="password"
             type="password"
             label="Password"
-            placeholder="Enter your password..."
+            placeholder={
+              locale === "en"
+                ? "Enter your password..."
+                : "Masukkan password Anda..."
+            }
             value={password}
             onChange={onPasswordChangeHandler}
           />
@@ -89,17 +102,22 @@ function Register() {
           <FormInput
             id="confirm-password"
             type="password"
-            label="Confirm Password"
-            placeholder="Enter your password confirmation..."
+            label={locale === "en" ? "Confirm Password" : "Konfirmasi Password"}
+            placeholder={
+              locale === "en"
+                ? "Enter your password confirmation..."
+                : "Masukkan konfirmasi password Anda..."
+            }
             value={confirmPassword}
             onChange={onConfirmPasswordChangeHandler}
           />
 
-          <button>Register</button>
+          <button>{locale === "en" ? "Register" : "Daftar"}</button>
         </form>
 
         <p>
-          Have an account? Login <Link to="/login">here</Link>!
+          {footerText}{" "}
+          <Link to="/login">{locale === "en" ? "here" : "di sini"}</Link>!
         </p>
       </FormContainer>
 

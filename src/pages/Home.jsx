@@ -2,12 +2,12 @@ import { Component, useContext } from "react";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
 import Toolbar from "../components/Toolbar";
-import { archiveNote, deleteNote, getActiveNotes } from "../utils/local-data";
 import { PropTypes } from "prop-types";
 import ContentCardsContainer from "../components/ContentCardsContainer";
 import ToolbarActionLink from "../components/ToolbarActionLink";
 import { useSearchParams } from "react-router-dom";
 import LocaleContext from "../context/LocaleContext";
+import { archiveNote, deleteNote, getActiveNotes } from "../utils/network-data";
 
 function HomePageWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,10 +26,8 @@ class Home extends Component {
   constructor(props) {
     super(props);
 
-    const q = this.props.searchParams.get("q");
-
     this.state = {
-      notes: q ? this.search(getActiveNotes(), q) : getActiveNotes(),
+      notes: [],
     };
 
     this.onArchiveHandler = this.onArchiveHandler.bind(this);
@@ -37,32 +35,46 @@ class Home extends Component {
     this.onSearchHandler = this.onSearchHandler.bind(this);
   }
 
-  onSearchHandler({ value }) {
-    this.props.setSearchParams({ q: value.toLowerCase() });
+  async componentDidMount() {
+    const notes = await getActiveNotes();
+    const q = this.props.searchParams.get("q");
+
+    if (q) notes.data = this.search(notes.data, q);
+
+    this.setState(() => {
+      return { notes: notes.data };
+    });
+  }
+
+  async onSearchHandler({ value }) {
+    this.props.setSearchParams({ q: value ? value.toLowerCase() : "" });
+    const notes = await getActiveNotes();
 
     this.setState(() => {
       return {
-        notes: this.search(getActiveNotes(), value),
+        notes: this.search(notes.data, value),
       };
     });
   }
 
-  onArchiveHandler(id) {
-    this.setState(() => {
-      archiveNote(id);
+  async onArchiveHandler(id) {
+    await archiveNote(id);
+    const notes = await getActiveNotes();
 
+    this.setState(() => {
       return {
-        notes: getActiveNotes(),
+        notes: notes.data,
       };
     });
   }
 
-  onDeleteHandler(id) {
-    this.setState(() => {
-      deleteNote(id);
+  async onDeleteHandler(id) {
+    await deleteNote(id);
+    const notes = await getActiveNotes();
 
+    this.setState(() => {
       return {
-        notes: getActiveNotes(),
+        notes: notes.data,
       };
     });
   }
@@ -92,6 +104,7 @@ class Home extends Component {
         <SearchBar
           searchHandler={this.onSearchHandler}
           searchQuery={this.props.searchParams.get("q")}
+          locale={this.props.locale}
         />
         <ContentCardsContainer
           notes={this.state.notes}

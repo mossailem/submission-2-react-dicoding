@@ -4,6 +4,7 @@ import ContentCardContent from "./ContentCardContent";
 import ContentCardActionButton from "./ContentCardActionButton";
 import { useContext } from "react";
 import LocaleContext from "../context/LocaleContext";
+import getArchiveActionTitle from "../utils/getArchiveActionTitle";
 
 function ContentCard({
   id,
@@ -45,13 +46,6 @@ function ContentCard({
       </div>
     </article>
   );
-}
-
-function getArchiveActionTitle(isArchived, locale) {
-  if (isArchived && locale === "en") return "Unarchive";
-  if (isArchived && locale === "id") return "Keluarkan dari Arsip";
-  if (!isArchived && locale === "en") return "Archive";
-  return "Arsipkan";
 }
 
 ContentCard.propTypes = {

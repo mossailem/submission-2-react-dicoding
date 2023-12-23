@@ -6,6 +6,7 @@ import SessionContext from "../context/SessionContext";
 import { redirect } from "react-router-dom";
 import ColorModeContext from "../context/ColorModeContext";
 import LocaleContext from "../context/LocaleContext";
+import { putAccessToken } from "../utils/network-data";
 
 function ToolbarTitle({ isHome, title }) {
   const { session, setSession } = useContext(SessionContext);
@@ -14,6 +15,7 @@ function ToolbarTitle({ isHome, title }) {
 
   const logoutHandler = () => {
     setSession(null);
+    putAccessToken("");
     redirect("/");
   };
 

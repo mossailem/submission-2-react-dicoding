@@ -26,7 +26,9 @@ class SearchBar extends Component {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search here..."
+          placeholder={
+            this.props.locale === "en" ? "Search here..." : "Cari di sini..."
+          }
           onChange={this.onSearchHandler}
           value={this.state.value}
         />
@@ -38,6 +40,7 @@ class SearchBar extends Component {
 SearchBar.propTypes = {
   searchHandler: PropTypes.func.isRequired,
   searchQuery: PropTypes.string,
+  locale: PropTypes.string.isRequired,
 };
 
 export default SearchBar;
